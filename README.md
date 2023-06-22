@@ -11,7 +11,7 @@ They are elaborated through the Spotify API so it requires internet connection t
 There are a few things you'll need to do before starting:
 - Download *spotifyParser.py* and *settings.ini* and place them into the same folder. This will be your root.
 - Create a new folder in your root called *out*, open it and create a new folder called *dump* inside.
-- Set the folder of the data sent to you from Spotify (called MyData) in the root folder.
+- Put the folder of the data sent to you from Spotify (called MyData) in the root folder.
 - Get your client ID and secret
 - Update the settings.ini file
 - Have **Python** installed
@@ -52,7 +52,7 @@ python spotifyParser.py
 And it's done! Let it run, it will take a while depending on your internet connection.
 
 ### Restarting 
-If you want to restart from scratch, make sure you delete **EVERYTHING** in your out folder. 
+If you want to restart from scratch, make sure you delete **EVERYTHING** in your dump folder. 
 Then set the *lastvalue* option in the settings file to 0 and you're good to go.
 
 
