@@ -94,7 +94,7 @@ indexed by the position in the (concatenation of) file(s).
     "artistName": "ARTIST_NAME",
     "trackName": "TRACK_NAME",
     "msPlayed": MILLIS_PLAYED_INSTANCE
-  }
+  },
 [...]
 }
 ```
