@@ -10,6 +10,7 @@ A parser for the Streaming History of last year that Spotify sends you via https
 There are a few things you'll need to do before starting:
 - Download *spotifyParser.py* and *settings.ini* and place them into the same folder. This will be your root.
 - Set the folder of the data sent to you from Spotify (called MyData) in the root folder.
+- Create a new folder in your root called *out*
 - Get your client ID and secret
 - Update the settings.ini file
 - Have **Python** installed
