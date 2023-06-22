@@ -41,21 +41,21 @@ for x in range(1, filesNr):
         filemap += json.load(json_filex)
 
 
-dump_path = Path(os.getcwd()+'/out/dump.json')
+dump_path = Path(os.getcwd()+'/out/dump/dump.json')
 if dump_path.is_file():
     with open(dump_path) as dump:
         songdatini = json.load(dump)
 else:
     songdatini = {}
 
-err_path = Path(os.getcwd() + '/out/error.json')
+err_path = Path(os.getcwd() + '/out/dump/error.json')
 if err_path.is_file():
     with open(err_path) as errfile:
         errors = json.load(errfile)
 else:
     errors = {}
 
-othererr_path = Path(os.getcwd() + '/out/otherErrors.json')
+othererr_path = Path(os.getcwd() + '/out/dump/otherErrors.json')
 if othererr_path.is_file():
     with open(othererr_path) as otherrfile:
         otherErrors = json.load(otherrfile)
@@ -66,7 +66,7 @@ else:
 # it is saved in the config file
 lastVal = int(config['SETTINGS']['lastValue'])
 if lastVal < len(filemap):
-    print("Starting phase 1: parsing your data")
+    print("Phase 1: parsing your data")
     print("Total records:",len(filemap),"- starting from record number",lastVal+1)
     for i, val in enumerate(filemap):
         if i<lastVal:
@@ -136,7 +136,7 @@ if lastVal < len(filemap):
 
     with open(dump_path,'w') as dump, open('settings.ini','w') as settings, open(
         err_path,'w') as er, open(othererr_path,'w') as otherr:
-        print("phase 1 completed! you have",len(songdatini),"tracks and",len(errors)+len(otherErrors),"errors!")
+        print("Phase 1 completed! you have",len(songdatini),"tracks and",len(errors)+len(otherErrors),"errors!")
         json.dump(songdatini,dump)
         json.dump(errors, er)
         json.dump(otherErrors,otherr)
