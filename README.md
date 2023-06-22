@@ -9,8 +9,8 @@ A parser for the Streaming History of last year that Spotify sends you via https
 
 There are a few things you'll need to do before starting:
 - Download *spotifyParser.py* and *settings.ini* and place them into the same folder. This will be your root.
-- Set the folder of the data sent to you from Spotify (called MyData) in the root folder.
 - Create a new folder in your root called *out*
+- Set the folder of the data sent to you from Spotify (called MyData) in the root folder.
 - Get your client ID and secret
 - Update the settings.ini file
 - Have **Python** installed
@@ -30,9 +30,9 @@ of the program.
 - ClientSecret: the client secret you got from the developers app
 - filesNumber: how many StreamingHistory_.json are in the MyData folder.
   >Note: put the total number of StreamingHistory files and not the greatest index, they start from 0 and not 1!
-- lastValue: the last index elaborated by the parser. 
-  - If you want to restart the parsing set it to 0  
-  - don't touch it in other cases (you will miss records/have duplicates)
+- lastValue: the last index elaborated by the parser.  
+  - don't touch it (you will miss records/have duplicates)
+  - unless you want to [restart](#restarting-) 
 
 ### Installing Python
 There are plenty of guides in the sea but I'll link you one for ease: 
@@ -49,6 +49,11 @@ Or, if you're on windows:
 python spotifyParser.py
 ```
 And it's done! Let it run, it will take a while depending on your internet connection.
+
+### Restarting 
+If you want to restart from scratch, make sure you delete **EVERYTHING** in your out folder. 
+Then set the *lastvalue* option in the settings file to 0 and you're good to go.
+
 
 ## Troubleshooting
 
