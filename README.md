@@ -88,12 +88,15 @@ It contains the JSON directly from the StreamingHistory file,
 indexed by the position in the (concatenation of) file(s). 
 #### Structure 
 ```
+{
 "POSITION": {
     "endTime": "INSTANCE_TIMESTAMP",
     "artistName": "ARTIST_NAME",
     "trackName": "TRACK_NAME",
     "msPlayed": MILLIS_PLAYED_INSTANCE
   }
+[...]
+}
 ```
 ### Dump folder
 You'll find other kinds of files there: dump.json, error.json and otherErrors.json.  
