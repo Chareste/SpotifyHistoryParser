@@ -3,13 +3,14 @@
 This is NOT the parser for the **EXTENDED** Streaming History. It will be released too but *it's not available for now.*
 
 # Spotify History Parser
-A parser for the Streaming History of last year that Spotify sends you via https://www.spotify.com/us/account/privacy/  .
+A parser for the Streaming History of last year that Spotify sends you via https://www.spotify.com/us/account/privacy/  .  
+They are elaborated through the Spotify API so it requires internet connection to function.
 
 ## Getting started
 
 There are a few things you'll need to do before starting:
 - Download *spotifyParser.py* and *settings.ini* and place them into the same folder. This will be your root.
-- Create a new folder in your root called *out*
+- Create a new folder in your root called *out*, open it and create a new folder called *dump* inside.
 - Set the folder of the data sent to you from Spotify (called MyData) in the root folder.
 - Get your client ID and secret
 - Update the settings.ini file
@@ -54,6 +55,49 @@ And it's done! Let it run, it will take a while depending on your internet conne
 If you want to restart from scratch, make sure you delete **EVERYTHING** in your out folder. 
 Then set the *lastvalue* option in the settings file to 0 and you're good to go.
 
+
+## Output
+
+The program will return you two main JSON files, data.json and discarded.json.  
+
+### data.json
+
+This file contains the effective elaborated output with all the data elaborated from your streaming
+history, minus the tracks that were discarded.
+
+#### structure
+```
+{
+  "TRACK_ID": {
+    "ID": "TRACK_ID",
+    "Artist": "ARTIST_NAME",
+    "Title": "TRACK_NAME",
+    "msDuration": LENGTH_IN_MILLISECONDS,
+    "TimesPlayed": TIMES_PLAYED>=1/3_TRACK,
+    "msPlayed": TOTAL_MILLIS_PLAYED
+  },
+  [...]
+  }
+```
+### discarded.json 
+
+These are the listening instances of the tracks that couldn't be found. 
+They most likely are deleted tracks.
+
+It contains the JSON directly from the StreamingHistory file, 
+indexed by the position in the (concatenation of) file(s). 
+#### Structure 
+```
+"POSITION": {
+    "endTime": "INSTANCE_TIMESTAMP",
+    "artistName": "ARTIST_NAME",
+    "trackName": "TRACK_NAME",
+    "msPlayed": MILLIS_PLAYED_INSTANCE
+  }
+```
+### Dump folder
+You'll find other kinds of files there: dump.json, error.json and otherErrors.json.  
+These are all files elaborated and saved during the first parsing phase and used in the second one.
 
 ## Troubleshooting
 
