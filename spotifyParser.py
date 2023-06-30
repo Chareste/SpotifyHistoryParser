@@ -1,4 +1,19 @@
-#! /usr/bin/env python3
+#
+ # This file is part of the XXX distribution (https://github.com/xxxx or http://xxx.github.io).
+ # Copyright (c) 2015 Liviu Ionescu.
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, version 3.
+ #
+ # This program is distributed in the hope that it will be useful, but
+ # WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ # General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with this program. If not, see <http://www.gnu.org/licenses/>.
+ #
 import json
 import os
 
@@ -43,24 +58,27 @@ for x in range(1, filesNr):
 
 dump_path = Path(os.getcwd()+'/out/dump/dump.json')
 if dump_path.is_file():
-    with open(dump_path) as dump:
-        songdatini = json.load(dump)
+    with open(dump_path) as dump_file:
+        songdatini = json.load(dump_file)
 else:
     songdatini = {}
 
 err_path = Path(os.getcwd() + '/out/dump/error.json')
 if err_path.is_file():
-    with open(err_path) as errfile:
-        errors = json.load(errfile)
+    with open(err_path) as err_file:
+        errors = json.load(err_file)
 else:
     errors = {}
 
-othererr_path = Path(os.getcwd() + '/out/dump/otherErrors.json')
-if othererr_path.is_file():
-    with open(othererr_path) as otherrfile:
-        otherErrors = json.load(otherrfile)
+
+addinf_path = Path(os.getcwd() + '/out/dump/additionalInfo.json')
+if addinf_path.is_file():
+    with open(addinf_path) as addinf_file:
+        additionalInfo = json.load(addinf_file)
 else:
-    otherErrors = {}
+    with open(os.getcwd()+"/MyData/Identity.json") as id_file:
+        identifier = json.load(id_file)
+        additionalInfo = {"User": identifier['displayName'],"TotalMS": 0, "DayDistribution": [0]*24}
 
 # lastVal is the last save point reached
 # it is saved in the config file
@@ -77,18 +95,18 @@ if lastVal < len(filemap):
         try:
             resp = (session.get("https://api.spotify.com/v1/search?q="+request+"&type=track&limit=1"))
             if resp.status_code == 400: #bad request
-                print(i,":",resp)
-                otherErrors[i] = {"Error": resp, "TrackName": val['trackName'], "ArtistName": val['artistName'], "ID": i}
+                #print(i,":",resp)
+                errors[i] = {"Error": "[400] - name too long", "ID": i}
                 #input()
                 continue
             elif resp.status_code != 200:
-                print(resp, resp.headers)
+                print(resp)
                 print("Error, saving file and closing at "+str(i))
-                with open(dump_path,'w') as dump, open(err_path,'w') as er, open(
-                        othererr_path,'w') as otherr, open('settings.ini','w') as settings:
+                with open(dump_path,'w') as dump, open(err_path,'w') as er,open(
+                        'settings.ini','w') as settings, open(addinf_path,'w') as addinf_file:
                     json.dump(songdatini,dump)
                     json.dump(errors, er)
-                    json.dump(otherErrors, otherr)
+                    json.dump(additionalInfo, addinf_file)
                     config['SETTINGS']['lastValue'] = str(i)
                     config.write(settings)
                 print("Save completed: first "+str(i)+" rows saved")
@@ -96,50 +114,52 @@ if lastVal < len(filemap):
                 exit(1)
 
 
-
-
         except Exception as e:
             print(resp.content)
-            otherErrors[i] = {"Error": e, "TrackName": val['trackName'], "ArtistName": val['artistName']}
+            errors[i] = {"Error": str(resp.content),"ID": i}
             #input()
             continue
+        
         response = resp.json()
+        #print(response)
         try:
             trackID = response["tracks"]["items"][0]["id"]
-            track_ms= response["tracks"]["items"][0]["duration_ms"]
+            track_ms = response["tracks"]["items"][0]["duration_ms"]
 
             if trackID not in songdatini:
-                songdatini[trackID]={"ID":trackID, "Artist": val['artistName'], "Title": val['trackName'], "msDuration": track_ms,
-                                "TimesPlayed": 1 if val['msPlayed']>track_ms/3 else 0, "msPlayed": val['msPlayed']}
-            else:
-                songdatini[trackID]["TimesPlayed"] += 1 if val['msPlayed']>track_ms/3 else 0
-                songdatini[trackID]["msPlayed"] += val['msPlayed']
+                songdatini[trackID]={"Artist": val['artistName'], "Title": val['trackName'], "msDuration": track_ms,
+                                     "TimesPlayed": 0, "msPlayed": 0, "timeDistribution": [0]*8}
+      
+            songdatini[trackID]["TimesPlayed"] += 1 if val['msPlayed']>track_ms/3 else 0
+            songdatini[trackID]["msPlayed"] += val['msPlayed']
+
+            time = val['endTime'].split(" ")[1].split(":")[0]
+            songdatini[trackID]["timeDistribution"][int(time)//3] +=1 if val['msPlayed']>track_ms/3 else 0
+            additionalInfo["DayDistribution"][int(time)]+=1 if val['msPlayed']>track_ms/3 else 0
+            additionalInfo["TotalMS"]+= val["msPlayed"]
+            
         except IndexError as e:
-            if val['trackName']+val['artistName'] not in errors:
-                errors[val['trackName']+val['artistName']] = {
-                    "response": response,"TrackName": val['trackName'], "ArtistName": val['artistName'], "count": 1, "IDs": [i]}
-            else:
-                errors[val['trackName']+val['artistName']]["count"] +=1
-                errors[val['trackName']+val['artistName']]["IDs"].append(i)
+            errors[i] = {"Error": "Track not found - try a different query","ID": i}
+
             # print(e)
         lastVal+=1
         #print(i+1,"out of",len(filemap))
         if (i+1)%100 == 0:
             with open(dump_path,'w') as dump, open('settings.ini','w') as settings, open(
-                err_path,'w') as er, open(othererr_path,'w') as otherr:
+                err_path,'w') as er,open(addinf_path,'w') as addinf_file:
                 json.dump(songdatini,dump)
                 json.dump(errors, er)
-                json.dump(otherErrors, otherr)
+                json.dump(additionalInfo, addinf_file)
                 config['SETTINGS']['lastValue'] = str(i+1)
                 config.write(settings)
                 print("Save completed: first "+str(i+1)+" records elaborated.")
 
     with open(dump_path,'w') as dump, open('settings.ini','w') as settings, open(
-        err_path,'w') as er, open(othererr_path,'w') as otherr:
-        print("Phase 1 completed! you have",len(songdatini),"tracks and",len(errors)+len(otherErrors),"errors!")
+        err_path,'w') as er, open(addinf_path,'w') as addinf_file:
+        print("Phase 1 completed! you have",len(songdatini),"tracks and",len(errors),"errors!")
         json.dump(songdatini,dump)
         json.dump(errors, er)
-        json.dump(otherErrors,otherr)
+        json.dump(additionalInfo, addinf_file)
         config['SETTINGS']['lastValue'] = str(len(filemap))
         config.write(settings)
 
@@ -155,11 +175,8 @@ session.headers.update({"Authorization": f"Bearer  {api_key}"})
 ids = []
 discardedRecords = {}
 
+
 for val in errors:
-   #print(val)
-   for elem in errors[val]['IDs']:
-      ids.append(elem)
-for val in otherErrors:
    ids.append(val)
 
 print(len(ids),"to check, starting...")
@@ -196,17 +213,25 @@ for i, val in enumerate(filemap):
 
 
       if trackID not in songdatini:
-         songdatini[trackID]={"ID":trackID, "Artist": val['artistName'], "Title": val['trackName'], "msDuration": track_ms,
-                           "TimesPlayed": 1 if val['msPlayed']>track_ms/3 else 0, "msPlayed": val['msPlayed']}
-      else:
-         songdatini[trackID]["TimesPlayed"] += 1 if val['msPlayed']>track_ms/3 else 0
-         songdatini[trackID]["msPlayed"] += val['msPlayed']
+         songdatini[trackID]={"Artist": val['artistName'], "Title": val['trackName'], "msDuration": track_ms,
+                              "TimesPlayed": 0, "msPlayed": 0, "timeDistribution": [0]*8}
+      
+      songdatini[trackID]["TimesPlayed"] += 1 if val['msPlayed']>track_ms/3 else 0
+      songdatini[trackID]["msPlayed"] += val['msPlayed']
+
+      time = val['endTime'].split(" ")[1].split(":")[0]
+      songdatini[trackID]["timeDistribution"][int(time)//3] +=1 if val['msPlayed']>track_ms/3 else 0
+      additionalInfo["DayDistribution"][int(time)]+=1 if val['msPlayed']>track_ms/3 else 0
+      
+      additionalInfo["TotalMS"]+= val["msPlayed"]
    # print("ID",i,"successfully inserted")
 
 with open(os.getcwd()+'/out/data.json', 'w') as data, open(
-        os.getcwd()+'/out/discarded.json', 'w') as dr:
+        os.getcwd()+'/out/discarded.json', 'w') as dr, open(
+        os.getcwd()+'/out/additionalInfo.json','w') as ad:
     json.dump(songdatini, data)
     json.dump(discardedRecords, dr)
+    json.dump(additionalInfo, ad)
 
     print("completed! you have", len(songdatini), "tracks and", len(discardedRecords), "records discarded")
 
