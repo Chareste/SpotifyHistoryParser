@@ -78,7 +78,7 @@ if addinf_path.is_file():
 else:
     with open(os.getcwd()+"/MyData/Identity.json") as id_file:
         identifier = json.load(id_file)
-        additionalInfo = {"User": identifier['displayName'],"TotalMS": 0, "DayDistribution": [0]*24}
+        additionalInfo = {"User": identifier['displayName'],"TotalMS": 0, "DayDistribution": [0]*24, "LastUpdated": "in progress"}
 
 # lastVal is the last save point reached
 # it is saved in the config file
@@ -89,6 +89,8 @@ if lastVal < len(filemap):
     for i, val in enumerate(filemap):
         if i<lastVal:
             continue
+        if i == len(filemap):
+            additionalInfo['LastUpdated'] = val["endTime"]
 
         request = urllib.parse.quote(f"{val['trackName']}%20track:{val['trackName']}%20artist:{val['artistName']}")
         #print(request)
@@ -224,7 +226,6 @@ for i, val in enumerate(filemap):
       additionalInfo["DayDistribution"][int(time)]+=1 if val['msPlayed']>track_ms/3 else 0
       
       additionalInfo["TotalMS"]+= val["msPlayed"]
-   # print("ID",i,"successfully inserted")
 
 with open(os.getcwd()+'/out/data.json', 'w') as data, open(
         os.getcwd()+'/out/discarded.json', 'w') as dr, open(

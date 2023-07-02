@@ -4,7 +4,7 @@ This is NOT the parser for the **EXTENDED** Streaming History. It will be releas
 
 # Spotify History Parser
 A parser for the Streaming History of last year sent to you by Spotify [after requesting it there](https://www.spotify.com/us/account/privacy/).  
-They are elaborated through the Spotify API so it requires an internet connection to function.
+They are elaborated through the Spotify API so it requires internet connection to function.
 
 ## Getting started
 
@@ -58,7 +58,7 @@ Then set the *lastvalue* option in the settings file to 0 and you're good to go.
 
 ## Output
 
-The program will return you the main JSON files in the /out folder.  
+The program will return you two main JSON files, *data.json* and *discarded.json*.  
 
 ### data.json
 
@@ -90,7 +90,8 @@ the stats analyzer.
 {
   "User": SPOTIFY_USERNAME,
   "TotalMS": TOTAL_MILLIS_PLAYED,
-  "DayDistribution": [ PLAYS_PER_HOUR ]
+  "DayDistribution": [ PLAYS_PER_HOUR ],
+  "LastUpdated": TIMESTAMP_LATEST_INSTANCE
 }
 ```
 
@@ -131,3 +132,10 @@ Your program has been running for an hour and the key has expired. Rerunning the
 ### Other responses
 - 5xx: server errors, wait and retry later.
 - [check response codes here](https://developer.spotify.com/documentation/web-api/concepts/api-calls#response-status-codes)
+
+## Known bugs
+
+### Podcast episodes
+The program may display incorrect data when encountering a podcast episode. Unfortunately it doesn't seem to be fixable 
+because it's impossible to discern them from tracks based on the given data.  
+This is not an issue for the extended parser.
