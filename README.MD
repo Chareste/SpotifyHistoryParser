@@ -1,7 +1,6 @@
 ### - - IMPORTANT - -
 
-This is NOT the parser for the **EXTENDED** Streaming History. It will be released too but *it's not available for now.*
-
+This is NOT the parser for the **EXTENDED** Streaming History. You will find it [here](https://github.com/Chareste/SpotifyHistoryParserExtended)
 # Spotify History Parser
 A parser for the Streaming History of last year sent to you by Spotify [after requesting it there](https://www.spotify.com/us/account/privacy/).  
 They are elaborated through the Spotify API so it requires internet connection to function.
@@ -58,7 +57,7 @@ Then set the *lastvalue* option in the settings file to 0 and you're good to go.
 
 ## Output
 
-The program will return you two main JSON files, *data.json* and *discarded.json*.  
+The program will return you three main JSON files, *data.json*, *additionalInfo.json* and *discarded.json*.  
 
 ### data.json
 
@@ -76,6 +75,7 @@ history, minus the tracks that were discarded.
     "TimesPlayed": TIMES_PLAYED>=1/3_TRACK_LEN,
     "msPlayed": TOTAL_MILLIS_PLAYED
     "timeDistribution": [ PLAYS_PER_3HR_BLOCKS ]
+    "Popularity": TRACK_POPULARITY
   },
   [...]
   }
@@ -92,6 +92,7 @@ the stats analyzer.
   "TotalMS": TOTAL_MILLIS_PLAYED,
   "DayDistribution": [ PLAYS_PER_HOUR ],
   "LastUpdated": TIMESTAMP_LATEST_INSTANCE
+  "IsExtended": False
 }
 ```
 
