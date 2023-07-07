@@ -78,7 +78,8 @@ if addinf_path.is_file():
 else:
     with open(os.getcwd()+"/MyData/Identity.json") as id_file:
         identifier = json.load(id_file)
-        additionalInfo = {"User": identifier['displayName'],"TotalMS": 0, "DayDistribution": [0]*24, "LastUpdated": "in progress"}
+        additionalInfo = {"User": identifier['displayName'],"TotalMS": 0,
+                          "DayDistribution": [0]*24, "LastUpdated": "in progress", "IsExtended": "False"}
 
 # lastVal is the last save point reached
 # it is saved in the config file
@@ -89,8 +90,6 @@ if lastVal < len(filemap):
     for i, val in enumerate(filemap):
         if i<lastVal:
             continue
-        if i == len(filemap):
-            additionalInfo['LastUpdated'] = val["endTime"]
 
         request = urllib.parse.quote(f"{val['trackName']}%20track:{val['trackName']}%20artist:{val['artistName']}")
         #print(request)
@@ -127,10 +126,11 @@ if lastVal < len(filemap):
         try:
             trackID = response["tracks"]["items"][0]["id"]
             track_ms = response["tracks"]["items"][0]["duration_ms"]
+            popularity =response["tracks"]["items"][0]["popularity"]
 
             if trackID not in songdatini:
                 songdatini[trackID]={"Artist": val['artistName'], "Title": val['trackName'], "msDuration": track_ms,
-                                     "TimesPlayed": 0, "msPlayed": 0, "timeDistribution": [0]*8}
+                                     "TimesPlayed": 0, "msPlayed": 0, "timeDistribution": [0]*8, "Popularity": popularity}
       
             songdatini[trackID]["TimesPlayed"] += 1 if val['msPlayed']>track_ms/3 else 0
             songdatini[trackID]["msPlayed"] += val['msPlayed']
@@ -155,6 +155,8 @@ if lastVal < len(filemap):
                 config['SETTINGS']['lastValue'] = str(i+1)
                 config.write(settings)
                 print("Save completed: first "+str(i+1)+" records elaborated.")
+
+    additionalInfo['LastUpdated'] = filemap[len(filemap) - 1]["endTime"]
 
     with open(dump_path,'w') as dump, open('settings.ini','w') as settings, open(
         err_path,'w') as er, open(addinf_path,'w') as addinf_file:
@@ -234,7 +236,7 @@ with open(os.getcwd()+'/out/data.json', 'w') as data, open(
     json.dump(discardedRecords, dr)
     json.dump(additionalInfo, ad)
 
-    print("completed! you have", len(songdatini), "tracks and", len(discardedRecords), "records discarded")
+    print("Completed! you have", len(songdatini), "tracks and", len(discardedRecords), "records discarded")
 
 
         
