@@ -127,10 +127,12 @@ if lastVal < len(filemap):
             trackID = response["tracks"]["items"][0]["id"]
             track_ms = response["tracks"]["items"][0]["duration_ms"]
             popularity =response["tracks"]["items"][0]["popularity"]
+            artistPopularity =response["tracks"]["items"][0]["artist"]["popularity"]
 
             if trackID not in songdatini:
                 songdatini[trackID]={"Artist": val['artistName'], "Title": val['trackName'], "msDuration": track_ms,
-                                     "TimesPlayed": 0, "msPlayed": 0, "timeDistribution": [0]*8, "Popularity": popularity}
+                                     "TimesPlayed": 0, "msPlayed": 0, "timeDistribution": [0]*8, "Popularity": popularity,
+                                     "ArtistPopularity": artistPopularity}
       
             songdatini[trackID]["TimesPlayed"] += 1 if val['msPlayed']>track_ms/3 else 0
             songdatini[trackID]["msPlayed"] += val['msPlayed']
@@ -201,6 +203,8 @@ for i, val in enumerate(filemap):
               try:
                 trackID = response["tracks"]["items"][0]["id"]
                 track_ms= response["tracks"]["items"][0]["duration_ms"]
+                popularity = response["tracks"]["items"][0]["popularity"]
+                artistPopularity = response["tracks"]["items"][0]["artist"]["popularity"]
                 break
               except IndexError:
                 #print("Trying input "+tryInput[ctr]+" on ID "+str(i))
@@ -218,7 +222,8 @@ for i, val in enumerate(filemap):
 
       if trackID not in songdatini:
          songdatini[trackID]={"Artist": val['artistName'], "Title": val['trackName'], "msDuration": track_ms,
-                              "TimesPlayed": 0, "msPlayed": 0, "timeDistribution": [0]*8}
+                              "TimesPlayed": 0, "msPlayed": 0, "timeDistribution": [0]*8, "Popularity": popularity,
+                              "ArtistPopularity": artistPopularity}
       
       songdatini[trackID]["TimesPlayed"] += 1 if val['msPlayed']>track_ms/3 else 0
       songdatini[trackID]["msPlayed"] += val['msPlayed']

@@ -1,6 +1,7 @@
 ### - - IMPORTANT - -
 
-This is NOT the parser for the **EXTENDED** Streaming History. You will find it [here](https://github.com/Chareste/SpotifyHistoryParserExtended)
+This is NOT the parser for the **EXTENDED** Streaming History. It will be released too but *it's not available for now.*
+
 # Spotify History Parser
 A parser for the Streaming History of last year sent to you by Spotify [after requesting it there](https://www.spotify.com/us/account/privacy/).  
 They are elaborated through the Spotify API so it requires internet connection to function.
@@ -68,14 +69,14 @@ history, minus the tracks that were discarded.
 ```
 {
   "TRACK_ID": {
-    "ID": TRACK_ID,
     "Artist": ARTIST_NAME,
     "Title": TRACK_NAME,
     "msDuration": LENGTH_IN_MILLISECONDS,
     "TimesPlayed": TIMES_PLAYED>=1/3_TRACK_LEN,
-    "msPlayed": TOTAL_MILLIS_PLAYED
-    "timeDistribution": [ PLAYS_PER_3HR_BLOCKS ]
+    "msPlayed": TOTAL_MILLIS_PLAYED,
+    "timeDistribution": [ PLAYS_PER_3HR_BLOCKS ],
     "Popularity": TRACK_POPULARITY
+    "ArtistPopularity": ARTIST_POPULARITY
   },
   [...]
   }
@@ -92,7 +93,6 @@ the stats analyzer.
   "TotalMS": TOTAL_MILLIS_PLAYED,
   "DayDistribution": [ PLAYS_PER_HOUR ],
   "LastUpdated": TIMESTAMP_LATEST_INSTANCE
-  "IsExtended": False
 }
 ```
 
@@ -134,7 +134,7 @@ Your program has been running for an hour and the key has expired. Rerunning the
 - 5xx: server errors, wait and retry later.
 - [check response codes here](https://developer.spotify.com/documentation/web-api/concepts/api-calls#response-status-codes)
 
-## Known bugs
+## Known issues
 
 ### Podcast episodes
 The program may display incorrect data when encountering a podcast episode. Unfortunately it doesn't seem to be fixable 
