@@ -127,7 +127,7 @@ if lastVal < len(filemap):
             trackID = response["tracks"]["items"][0]["id"]
             track_ms = response["tracks"]["items"][0]["duration_ms"]
             popularity =response["tracks"]["items"][0]["popularity"]
-            artistPopularity =response["tracks"]["items"][0]["artist"][0]["popularity"]
+            artistPopularity =response["tracks"]["items"][0]["artist"]["popularity"]
 
             if trackID not in songdatini:
                 songdatini[trackID]={"Artist": val['artistName'], "Title": val['trackName'], "msDuration": track_ms,
